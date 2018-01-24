@@ -2,14 +2,16 @@
 <html lang="en">
 <head>
 <title></title>
- 
+
 </head>
 <body>
 
+<form method="POST" action="/urls/<%= shortURL %>/update">
 
+<input type="text" name="id"></input>
+<input type="submit" value="Submit"></input>
+</form>
 <p>  <%= shortURL %>    </p>
 <p>  <%= longURL %>   </p>
-
-
 </body>
 </html>

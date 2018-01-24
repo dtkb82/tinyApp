@@ -45,7 +45,7 @@ app.get("/u/:shortURL", (req, res) => {
 //takes in a long URL and redirects to a short URL
 app.post("/urls", (req, res) => {
 	let longURL = req.body.longURL
-	var shortURL = generateRandomString(6);
+	let shortURL = generateRandomString(6);
 	urlDatabase[shortURL] = longURL;
 	
 	res.redirect(`/urls/${shortURL}`);
@@ -55,6 +55,15 @@ app.post("/urls/:id/delete", (req, res) => {
 	delete urlDatabase[req.params.id]
 	res.redirect('/urls');
 });
+//modify's existing URL's
+app.post("/urls/:id/update", (req, res) => { 
+	let newLongURL = req.body.id;
+	let shortUrl = req.params.id;
+	urlDatabase[shortUrl] = newLongURL;
+	res.redirect('/urls');
+
+});
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
