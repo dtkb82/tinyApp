@@ -2,7 +2,7 @@ var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
 var randomstring = require("randomstring");
-// var generateRandomString = randomstring.generate(6);
+
 
 app.set("view engine", "ejs");
 
@@ -15,7 +15,7 @@ function generateRandomString(length) {
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "9sm5xK": "http://www.google.com",
 };
 
 app.get("/urls", (req, res) => {
@@ -28,18 +28,29 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-	let templateVars = { shortURL: req.params.id };
+	let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id] };
 	res.render("urls_show", templateVars);
 });
 
-app.post("/urls", (req, res) => {
-	console.log(req.body, generateRandomString(6)); //debug statement to see POST parameters
-	res.send("Ok");
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  if (longURL === undefined){	
+  	res.send("This URL does not exist");
+  } else {
+  	res.redirect(longURL);
+  }
+  
+  
 });
+//takes in a long URL and redirects to a short URL
+app.post("/urls", (req, res) => {
+	let longURL = req.body.longURL
+	var shortURL = generateRandomString(6);
+	urlDatabase[shortURL] = longURL;
+	
+	res.redirect(`/urls/${shortURL}`);
 
-// app.get("/hello", (req, res) => {
-// 	res.end("<html><body>Hello <b>World</b></body></html>\n");
-// });
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

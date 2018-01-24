@@ -1,4 +1,15 @@
-app.get("/urls/:id", (req, res) => {
-	let templateVars = { shortURL: req.params.id };
-	res.render("urls_show", templateVars);
-});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<title>Header</title>
+</head>
+<body>
+
+
+<p>  <%= shortURL %>    </p>
+<p>  <%= longURL %>   </p>
+
+
+</body>
+</html>
