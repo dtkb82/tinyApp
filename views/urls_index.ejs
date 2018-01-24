@@ -3,8 +3,23 @@
 <html lang="en">
 <head>
   <title>TinyApp</title>
+
 </head>
 <body>
     <h1>This is the body!</h1>
+    	<ul>
+    	<p> <% for (shortURL in urls) { %>
+    		
+    			<li><%= shortURL %> ---> <%= urls[shortURL] %> 
+    				<form method="POST" action="/urls/<%= shortURL %>/delete" align="centre">
+    				<input type="submit" value="DELETE"></input>
+    				</form>
+
+    			</li>
+    		<% } %>
+    
+    
+    
+    
 </body>
 </html>

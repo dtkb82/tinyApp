@@ -49,7 +49,11 @@ app.post("/urls", (req, res) => {
 	urlDatabase[shortURL] = longURL;
 	
 	res.redirect(`/urls/${shortURL}`);
-
+});
+//removes a URL
+app.post("/urls/:id/delete", (req, res) => {
+	delete urlDatabase[req.params.id]
+	res.redirect('/urls');
 });
 
 app.listen(PORT, () => {
