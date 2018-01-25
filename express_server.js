@@ -16,10 +16,23 @@ function generateRandomString(length) {
  return(randomstring.generate(length));
 }
 
-var urlDatabase = {
+const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
 };
+
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
 
 app.get("/urls", (req, res) => {
   let templateVars = { 
@@ -47,9 +60,7 @@ app.get("/u/:shortURL", (req, res) => {
   	res.send("This URL does not exist");
   } else {
   	res.redirect(longURL);
-  }
-  
-  
+  } 
 });
 //takes in a long URL and redirects to a short URL
 app.post("/urls", (req, res) => {
@@ -71,11 +82,29 @@ app.post("/urls/:id/update", (req, res) => {
 	urlDatabase[shortUrl] = newLongURL;
 	res.redirect('/urls');
 });
-//	
+
 app.post("/login/", (req, res) => {
-	let userName = req.body.name;
+	const userName = req.body.name;
 	res.cookie("username", userName);
-	res.redirect('/urls');
+
+	const user = users.id.find((user) => user.id === userName)
+	if (!user) {
+		res.redirect('/login')
+		return
+	}
+});
+
+app.get('/registration', (req, res) => {
+	res.render('urls_registration');
+});
+
+app.post("/registration", (req, res) => {
+	// let name = users[req.params.name];
+	let email = user[req.body.email];
+	let password = users[req.body.password];
+	users.id.push({email : req.body.email, password: req.body.password})
+	console.log("All users are: ', users.id ")
+	res.redirect("/registration");
 });
 
 app.post("/logout/", (req, res) => {
