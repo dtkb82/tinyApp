@@ -21,6 +21,21 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  },
+
+  userData : []
+}
+
 app.get("/urls", (req, res) => {
   let templateVars = { 
   	urls: urlDatabase,
@@ -57,6 +72,17 @@ app.post("/urls", (req, res) => {
 	
 	res.redirect(`/urls/${shortURL}`);
 });
+app.get("/registration", (req, res) => {
+	res.render('urls_registration');
+});
+
+app.post("/registration", (req, res) => {
+	let randomId = generateRandomString(6);
+	users.userData.push({id: randomId, email: req.body.email, password: req.body.password})
+	console.log(users.userData);
+	res.redirect('/registration');
+});
+
 //removes a URL
 app.post("/urls/:id/delete", (req, res) => {
 	delete urlDatabase[req.params.id]
