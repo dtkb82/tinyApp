@@ -39,8 +39,6 @@ app.get("/u/:shortURL", (req, res) => {
   } else {
   	res.redirect(longURL);
   }
-  
-  
 });
 //takes in a long URL and redirects to a short URL
 app.post("/urls", (req, res) => {
