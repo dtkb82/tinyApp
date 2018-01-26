@@ -1,6 +1,7 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
+const bcrypt = require('bcrypt');
 const app = express();
 
 app.use(cookieParser());
@@ -55,16 +56,18 @@ const users = {
   
 }
 
+console.log(users);
+
 function fetchUserName(){
 	return req.cookies["user_id"] ? users[req.cookies["user_id"]].username : ""
 }
 
-function checkUser(req, res, next) {
-	if (req.path.match(/login|registration/)) {
-		next()
-		return
-	}
-}
+// function checkUser(req, res, next) {
+// 	if (req.path.match(/login|registration/)) {
+// 		next()
+// 		return
+// 	}
+// }
 function getUser(req){
 	if(users[req.cookies["user_id"]] != null){
 		return users[req.cookies["user_id"]];
@@ -73,13 +76,32 @@ function getUser(req){
 	}
 }
 
-app.get("/urls", (req, res) => {
-  let templateVars = { 
-  	urls: urlDatabase,
-  	user: users[req.cookies["user_id"]]	
-   };
+function urlsForUser(userID){
+	 var userUrlDB = {};	
+	  for(var key in urlDatabase){
+	  	if(urlDatabase[key].userID == userID){
+	  		userUrlDB[key] = urlDatabase[key];
+		}
+	  }
 
-  res.render("urls_index", templateVars);
+	  return userUrlDB;
+	
+} 
+
+app.get("/urls", (req, res) => {
+	var userID = req.cookies["user_id"];
+
+	if (getUser(req) == false ){
+		res.redirect('/login');
+	} else {
+
+	  let templateVars = { 
+	  	urls: urlsForUser(userID),
+	  	user: users[userID]	
+	   };
+
+	  res.render("urls_index", templateVars);
+	}
 });
 
 app.get("/urls/new", (req, res) => {
@@ -93,20 +115,26 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
 	let templateVars = { 
-		shortURL: req.params.id, longURL: urlDatabase[req.params.id],
+		shortURL: req.params.id, 
+		longURL: urlDatabase[req.params.id].longURL,
 		user: users[req.cookies["user_id"]]
 	 };
 	res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  if (longURL === undefined){	
-  	res.send("This URL does not exist");
-  } else {
-  	res.redirect(longURL);
-  }
+	//console.log(req.params.shortURL)
+	// console.log(urlDatabase)
+  	if(urlDatabase[req.params.shortURL] != null){
+	  	let longURL = urlDatabase[req.params.shortURL].longURL;
+	  	res.redirect(longURL);
+	}else{
+		res.send("short URL does not exist");
+	}
 });
+
+
+
 //takes in a long URL and redirects to a short URL
 app.post("/urls", (req, res) => {
 	let longURL = req.body.longURL
@@ -126,39 +154,43 @@ app.get("/registration", (req, res) => {
 
 app.post("/registration", (req, res) => {
 	console.log(req.body)
-	if (req.body.email == "" || req.body.password == "") {
-		res.status(400);
-		res.send("please enter a valid email and password")
-		// res.redirect('urls/registration');
-		return
-	}; 
+	bcrypt.hash(req.body.password, 10, (err, hash) => {
+		if (err) {
+			res.send("There was an error creating your account.")
+			return
+		}
+	// if (req.body.email == "" || req.body.password == "") {
+	// 	res.status(400);
+	// 	res.send("please enter a valid email and password")
+	// 	// res.redirect('urls/registration');
+	// 	return
+	// }; 
 	let randomId = generateRandomString(6);
-	users[randomId] = {id: randomId, email: req.body.email, password: req.body.password};
+	users[randomId] = {id: randomId, email: req.body.email, password: hash};
 	console.log(users);
 	res.cookie("user_id", randomId);
 	res.redirect('/urls');
+	});
+
 });
 
 //removes a URL
 app.post("/urls/:id/delete", (req, res) => {
 	if (urlDatabase[req.params.id].userID == req.cookies["user_id"]){
 		delete urlDatabase[req.params.id]
-	res.redirect('/urls');
+		res.redirect('/urls');
 	} else {
 		res.status(403);
 		res.send("not the right user")
-	}
-	
-	
+	}	
 });
 //modify's existing URL's
 app.post("/urls/:id/update", (req, res) => { 
 	let newLongURL = req.body.longURL;
 	let shortUrl = req.params.id;
-
 	if (urlDatabase[req.params.id].userID == req.cookies["user_id"]){
 		 urlDatabase[req.params.id].longURL = newLongURL;
-	res.redirect('/urls');
+		res.redirect('/urls');
 	} else {
 		res.status(403);
 		res.send("not the right user")
@@ -172,9 +204,10 @@ app.get("/login", (req, res) => {
 app.post("/login/", (req, res) => {
 	const email = req.body.email
 	const password = req.body.password
-// find user by username
+
+
 	for (key in users){
-		if (users[key].email === email && users[key].password === password){
+		if (users[key].email === email && bcrypt.compareSync(password, users[key].password)){
 			res.cookie("user_id", users[key].id);
 			res.redirect('/urls');
 			return
@@ -192,3 +225,7 @@ app.post("/logout/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+
+
+
