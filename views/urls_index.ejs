@@ -10,11 +10,11 @@
 	<% include partials/_header %>
     <h1>This is the body!</h1>
     	<ul>
-    	<p> <% for (shortURL in urls) { %>
+    	<p> <% for (key in urls) { %>
     		
-    			<li><%= shortURL %> ---> <%= urls[shortURL] %> 
-    				<form method="POST" action="/urls/<%= shortURL %>/delete">
-    				<a href="/urls/<%= shortURL %>">Edit</a>
+    			<li><%= key %> ---> <%= urls[key].longURL %> 
+    				<form method="POST" action="/urls/<%= key %>/delete">
+    				<a href="/urls/<%= key %>">Edit</a>
     				<input type="submit" value="DELETE"></input>
     				</form>
 

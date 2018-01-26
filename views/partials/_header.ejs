@@ -2,22 +2,18 @@
 <html lang="en">
   <head><title>Tiny App</title></head>
 <body>
-	<% if(username){ %>
-  <%= username %>
+
+	<% if(user){ %>
+  <%= user.email %>
 
   <form method="POST" action="/logout">
   <input type="submit" value="Logout">
-  </form>
-
-	<% } else{ %> 
-
-  <form method="POST" action="/login">
-
-  <input type="text" name="name" placeholder="username">
-  
-  <input type="submit" value="Submit">
-
  </form>
+<% } else { %>
+	<a href="/registration">Register</a>
+	<a href="/login">Log In</a>
+	
+ 
 
 <% } %>
 
