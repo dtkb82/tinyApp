@@ -9,11 +9,19 @@
 <% include partials/_header %>
 
 <form method="POST" action="/urls/<%= shortURL %>/update">
+ 
+<p> Short URL:          <%= shortURL %>    </p>
 
-<input type="text" name="longURL"></input>
-<input type="submit" value="Submit"></input>
+
+<p> Long URL:            <%= longURL %>     </p>
+
+
+<input type="text" name="longURL" placeholder="Edit Long URL"></input>
+<input type="submit" value="Edit"></input>
+
 </form>
-<p>  <%= shortURL %>    </p>
-<p>  <%= longURL %>   </p>
+
+<a href="/urls">Back to URL's</a>
+
 </body>
 </html>

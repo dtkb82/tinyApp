@@ -9,17 +9,30 @@
 <body>
 	<% include partials/_header %>
     <h1>Welcome to Tiny App!</h1>
-    <h3>Here are your URL's </h3>
+    
 
-    <a href="/urls/new">Add a new URL</a>
+<a href="/urls/new">Add a new URL</a>
+
+    <h3>Here are the URL's </h3>
+
+    
     	<ul>
     	<p> <% for (key in urls) { %>
+
     		
     			<li><%= key %> ---> <%= urls[key].longURL %> 
+
+                    <% if (user != null && urls[key]["userID"] === user.id) { %>
+
     				<form method="POST" action="/urls/<%= key %>/delete">
-    				<a href="/urls/<%= key %>">Edit</a>
+
+            
     				<input type="submit" value="DELETE"></input>
+                    <a href="/urls/<%= key %>">Edit Long URL</a>
     				</form>
+
+                  <% } %>  
+
 
     			</li>
     		<% } %>
