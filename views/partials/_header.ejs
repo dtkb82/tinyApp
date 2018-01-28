@@ -7,16 +7,18 @@
   <%= user.email %>
 
   <form method="POST" action="/logout">
+  	
   <input type="submit" value="Logout">
+
  </form>
+
 <% } else { %>
 
 <h1> <%= error %> </h1>
+
 	<a href="/registration">Register</a>
 	<a href="/login">Log In</a>
 	
- 
-
 <% } %>
 
  </body>

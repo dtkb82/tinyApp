@@ -12,10 +12,8 @@ app.use(cookieSession({
 // Middleware to see what's going on with the server
 app.use(morgan('dev'))
 
-
 var PORT = process.env.PORT || 8080; // default port 8080
 var randomstring = require("randomstring");
-
 
 app.set("view engine", "ejs");
 
@@ -62,12 +60,6 @@ function fetchUserName(){
 	return req.session["user_id"] ? users[req.session["user_id"]].username : ""
 }
 
-// function checkUser(req, res, next) {
-// 	if (req.path.match(/login|registration/)) {
-// 		next()
-// 		return
-// 	}
-// }
 function getUser(req){
 	if(users[req.session ["user_id"]] != null){
 		return users[req.session["user_id"]];
@@ -75,7 +67,7 @@ function getUser(req){
 		return false;
 	}
 }
-
+//storing URL's added by User
 function urlsForUser(userID){
 	 var userUrlDB = {};	
 	  for(var key in urlDatabase){
@@ -90,10 +82,7 @@ function urlsForUser(userID){
 app.get("/urls", (req, res) => {
 	var userID = req.session["user_id"];
 	console.log(req.session);
-	// if (getUser(req) == false ){
-	// 	res.render("urls_index", {user: null, urls:[], error: "Please login"});
-	// } else {
-
+	
 	  let templateVars = {}; 
 	  templateVars.urls = urlDatabase;
 
@@ -105,11 +94,9 @@ app.get("/urls", (req, res) => {
 	  	templateVars.user = users[userID];
 	  }	
 	   
-
 	  res.render("urls_index", templateVars);
-	//}
 });
-
+//add new URL
 app.get("/urls/new", (req, res) => {
 	if (getUser(req) != false ){
 		res.render("urls_new", {user:getUser(req)});
@@ -125,7 +112,6 @@ app.get("/", (req, res) => {
 		res.redirect('/login');
 	}	
 });
-
 
 app.get("/urls/:id", (req, res) => {
 	if (getUser(req) == false ){
@@ -145,7 +131,7 @@ app.get("/urls/:id", (req, res) => {
 
 		console.log([req.session["user_id"]]);
 		res.render("urls_show", templateVars);	
-	}	else {
+	} else {
 		let templateVars = { 
 			shortURL: req.params.id, 
 			longURL: null,
@@ -192,13 +178,11 @@ app.post("/registration", (req, res) => {
 
 	let randomId = generateRandomString(6);
 	users[randomId] = {id: randomId, email: req.body.email, password: hash};
-	//console.log(users);
 	req.session.user_id = randomId;
-	//res.cookie("user_id", randomId);
 	res.redirect('/urls');
 	});
 });
-
+//deleting URL's
 app.post("/urls/:id/delete", (req, res) => {
 	if (urlDatabase[req.params.id].userID == req.session["user_id"]){
 		delete urlDatabase[req.params.id]
@@ -229,7 +213,7 @@ app.get("/login", (req, res) => {
 app.post("/login/", (req, res) => {
 	const email = req.body.email
 	const password = req.body.password
-
+//check for email and password
 	for (key in users){
 		if (users[key].email === email && bcrypt.compareSync(password, users[key].password)){
 			req.session.user_id = users[key].id;

@@ -1,24 +1,20 @@
-<title>Header</title>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <title>TinyApp</title>
-
 </head>
 
 <body>
+
 	<% include partials/_header %>
     <h1>Welcome to Tiny App!</h1>
     
-
 <a href="/urls/new">Add a new URL</a>
 
     <h3>Here are the URL's </h3>
 
-    
     	<ul>
     	<p> <% for (key in urls) { %>
-
     		
     			<li><%= key %> ---> <%= urls[key].longURL %> 
 
@@ -26,9 +22,10 @@
 
     				<form method="POST" action="/urls/<%= key %>/delete">
 
-            
     				<input type="submit" value="DELETE"></input>
+
                     <a href="/urls/<%= key %>">Edit Long URL</a>
+
     				</form>
 
                   <% } %>  
@@ -36,9 +33,6 @@
 
     			</li>
     		<% } %>
-    
-    
-    
-    
+      
 </body>
 </html>
